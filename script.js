@@ -24,22 +24,12 @@ function renderBaseMap() {
   }).addTo(map);
 }
 
-function renderMessages() {
-  const messages = [
-    "hola mi mi niña",
-    "como esta la monona",
-    "yo estoy de panini",
-    "y tu xd 🍌",
-  ];
 
-  messages.forEach((el) => insertMessage(el));
-}
-
-function insertMessage(text) {
+function insertMessage(text, classes='bg-cyan-600') {
   const containerChat = document.getElementById("chat-container");
   containerChat.insertAdjacentHTML(
     "beforeend",
-    `<p class="p-2 rounded text-white bg-cyan-600">
+    `<p class="p-2 rounded text-white ${classes}">
             ${text}
         </p>
         `
@@ -51,9 +41,11 @@ function onChatSend() {
   const text = textArea.value;
   if (text === "") return;
   textArea.value = "";
-  insertMessage(text);
-  const containerChat = document.getElementById("chat-scroll-container");
-  containerChat.scrollTop = containerChat.scrollHeight;
+  
+  sendObject({
+    type: 'chat',
+    content: text
+  })
 }
 
 function onChatKeypress(event) {
@@ -77,10 +69,42 @@ function sendObject(object) {
   webSocket.send(JSON.stringify(object));
 }
 
+function onMessageReceived(object) {
+  const classes = object.message.type === 'warn' ? 'bg-red-500' : 'bg-cyan-600'
+
+  insertMessage(object.message.content, classes);
+  const containerChat = document.getElementById("chat-scroll-container");
+  containerChat.scrollTop = containerChat.scrollHeight;
+}
+
+function onCrashedReceived(object) {
+
+}
+
+function onLandingReceived(object) {
+
+}
+
+function onTakeOffReceived(object) {
+
+}
+
+function onPlaneReceived(object) {
+
+}
+
+function onFlightsReceived(object) {
+  
+}
 
 function onObjectReceived(event) {
   const object = JSON.parse(event.data)
-  console.log(object)
+
+  switch(object.type) {
+    case 'message':
+      onMessageReceived(object)
+      break
+  }
 }
 
 function setupWebsocket() {
@@ -99,7 +123,6 @@ function setupWebsocket() {
 
 window.onload = () => {
   renderBaseMap();
-  renderMessages();
   setListeners();
   setupWebsocket();
 };
