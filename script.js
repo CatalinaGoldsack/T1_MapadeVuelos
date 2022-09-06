@@ -30,19 +30,29 @@ function renderBaseMap() {
   }).addTo(map);
 }
 
+function insertFlight(idFlight,idDeparture, departure, idDestination, destination, departureDate) {
+  const containerFlight = document.getElementById("flight-container");
+  containerFlight.insertAdjacentHTML('afterbegin', 
+  `<div  class="flex text-xs gap-1 text-center">
+   <h3 class="grow font-mono text-black p-1 bg-cyan-100"> ${idFlight} </h3>
+   <h3 class="grow font-mono text-black p-1 bg-slate-200">${idDeparture}</h3>
+   <h3 class="grow font-mono text-black p-1 "> ${departure} </h3>
+   <h3 class="grow font-mono text-black p-1 bg-slate-200">${idDestination}</h3>
+   <h3 class="grow font-mono text-black p-1 "> ${destination} </h3>
+   <h3 class="grow font-mono text-black p-1 bg-slate-100"> ${departureDate} </h3>
+   </div>`);
+}
+
 function insertMessage(text, classes = "bg-cyan-600", name, date) {
   const containerChat = document.getElementById("chat-container");
   containerChat.insertAdjacentHTML(
     "beforeend",
-    // <div class="rounded border-solid border-cyan-800">
     `<h1 class="font-mono font-semibold text-cyan-800 pt-3"> <i class="fas fa-user p-1"></i> ${name}</h1>
     <h1 class="text-zinc-700 text-xs"> ${date}</h1>
     <p class="p-2 rounded text-white ${classes}">
             ${text}
             
-      </p>
-   
-        `
+      </p> `
   );
 }
 
@@ -100,17 +110,28 @@ function onTakeOffReceived(object) {}
 
 function onPlaneReceived(object) {}
 
-function onFlightsReceived(object) {}
+function onFlightsReceived(object) {
+  const flights = object.flights
+
+  const idFlight = Object.values(flights)[0].id
+  const idDeparture = Object.values(flights)[0].departure.id
+  const departure = Object.values(flights)[0].departure.name
+  const idDestination = Object.values(flights)[0].destination.id
+  const destination = Object.values(flights)[0].destination.name
+  const departureDate = Object.values(flights)[0].departure_date
+
+  insertFlight(idFlight,idDeparture,departure, idDestination, destination, departureDate);
+}
 
 function onObjectReceived(event) {
   const object = JSON.parse(event.data);
-
+ 
   switch (object.type) {
     case "message":
       onMessageReceived(object);
       break;
     case "flights":
-      onMessageReceived(object)
+      onFlightsReceived(object);
       break;
   }
 }
