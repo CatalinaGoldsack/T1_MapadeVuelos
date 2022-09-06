@@ -58,27 +58,25 @@
             <h2 class="font-mono text-cyan-700 px-5 pb-2">
               Información vuelos
             </h2>
-
             <div class="flex mx-4 text-sm gap-1 text-center pl-1">
-              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm">
+              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm hover:bg-cyan-700" id="name">
+ 
+              </h3>
+              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm hover:bg-cyan-700" id="cars"> 
+              </h3>
+              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm hover:bg-cyan-700">
+                DESTINATION
+              </h3>
+              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm hover:bg-cyan-700">
+                FECHA SALIDA
+              </h3>
+              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm hover:bg-cyan-700">
                 Vuelo
               </h3>
-              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm">
+              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm hover:bg-cyan-700">
                 Vuelo
               </h3>
-              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm">
-                Vuelo
-              </h3>
-              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm">
-                Vuelo
-              </h3>
-              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm">
-                Vuelo
-              </h3>
-              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm">
-                Vuelo
-              </h3>
-              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm">
+              <h3 class="grow font-mono text-white bg-cyan-600 p-1 rounded-sm hover:bg-cyan-700">
                 Vuelo
               </h3>
             </div>
@@ -203,9 +201,10 @@
               CHAT <i class="fa-solid fa-comment"></i>
             </h2>
             <div
-              class="place-content-center bg-white rounded m-4 p-2 px-5 grow overflow-auto"
+              id="chat-scroll-container"
+              class="place-content-center bg-white rounded m-4 p-2 px-5 grow overflow-auto transition"
             >
-              <div class="flex flex-col gap-2 h-0 p-1 text-sm text-black-800">
+              <div class="flex flex-col gap-2 h-0 p-1 text-sm text-black-800" id="chat-container">
                 <p class="p-2 rounded text-white bg-cyan-600">
                   Lorem ipsum dolor sit amet consectetur adipisicing elit.
                   Impedit dolores modi rem veritatis accusamus sunt, et incidunt
@@ -230,10 +229,11 @@
           </div>
           <!---------------------------------------MENSAJE------------------------------------------------>
           <div class="basis-1/4 flex flex-col content-end">
-            <textarea
+            <textarea id="chat-input"
               class="m-4 mt-2 rounded overflow-y-scroll resize-none p-2 grow text-sm hover:shadow-inner"
             ></textarea>
             <button
+              id="chat-send-button"
               class="font-mono bg-cyan-700 mx-4 drop-shadow-md shadow-lg rounded text-white hover:bg-cyan-900 p-2 mb-4"
             >
               Enviar
