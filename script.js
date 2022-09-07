@@ -17,6 +17,7 @@ function uuidv4() {
 // }
 //
 let planeDict = {};
+let flightsList=[]
 
 let map;
 
@@ -37,26 +38,31 @@ function movePlane(plane) {
     iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
     popupAnchor: [15, 0], // point from which the popup should open relative to the iconAnchor
   });
-  console.log(plane.flight_id);
+
+  const newpopup = L.popup({
+    closeOnClick: false,
+    autoClose: false}).setContent(`<div class="font-mono font-bold text-cyan-600 text-xs"> Id Flight: <span class="text-slate-600"> ${plane.flight_id} </span> </div>
+    <div class="font-mono font-bold text-cyan-600 text-xs "> Aerolínea:  <span class="text-slate-600"> ${plane.airline.name} </span> </div>
+   <div class="font-mono font-bold text-cyan-600 text-xs "> ETA:  <span class="text-slate-600"> ${plane.ETA} </span> </div>
+  <div class="font-mono font-bold	text-cyan-600 text-xs "> Status: <span class="text-slate-600"> ${plane.status} </span> </div>
+  <div class="font-mono font-bold	text-cyan-600 text-xs "> Posición ->  <span class="text-slate-600"> lat: ${plane.position.lat}, long: ${plane.position.lat} </span> </div>
+  <div class="font-mono font-bold	text-cyan-600 text-xs "> Distancia  <span class="text-slate-600">${plane.distance} </span> </div>
+    <div class="font-mono font-bold	text-cyan-600 text-xs "> Arrival: <span class="text-slate-600"> ${plane.status} </span> </div>
+
+ 
+
+
+ `);
 
   // L.marker([51.5, -0.09], { icon: landing }).addTo(map).bindPopup("Soy un aeropuerto de aterrizaje");
-  const planeMarker = L.marker([plane.position.lat, plane.position.long], {
-    icon: planeIcon,
-  })
-    .addTo(map)
-    .bindPopup("Soy un avión");
+  const planeMarker = L.marker([plane.position.lat, plane.position.long], {icon: planeIcon}).addTo(map).bindPopup(newpopup);
   if (planeDict[plane.flight_id]) map.removeLayer(planeDict[plane.flight_id])
   planeDict[plane.flight_id] = planeMarker;
 }
 
-function insertFlight(
-  idFlight,
-  idDeparture,
-  departure,
-  idDestination,
-  destination,
-  departureDate
-) {
+function insertFlight(idFlight, departure, destination, departureDate) {
+  if (!flightsList.includes(idFlight)){
+
   const containerFlight = document.getElementById("flight-container");
   containerFlight.insertAdjacentHTML(
     "afterbegin",
@@ -66,7 +72,8 @@ function insertFlight(
    <h3 class="basis-1/4 font-mono text-black p-1 "> ${destination} </h3>
    <h3 class="basis-1/4 font-mono text-black p-1 bg-slate-100"> ${departureDate} </h3>
    </div>`
-  );
+  )
+  flightsList.push(idFlight)}
 }
 
 function insertMessage(text, classes = "bg-cyan-600", name, date) {
@@ -191,9 +198,7 @@ function onFlightsReceived(object) {
 
   insertFlight(
     idFlight,
-    idDeparture,
     departure,
-    idDestination,
     destination,
     departureDate
   );
