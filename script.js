@@ -302,7 +302,7 @@ function setupWebsocket() {
     sendObject({
       type: "join",
       id: uuidv4(),
-      username: "Catalina",
+      username: "Cata",
     });
   };
 
