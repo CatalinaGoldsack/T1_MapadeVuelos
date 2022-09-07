@@ -31,6 +31,24 @@ function renderBaseMap() {
   }).addTo(map);
 }
 
+function showFlight(flights){
+  
+
+  const locationDeparture = Object.values(flights)[0].departure.location;
+  const latDeparture = locationDeparture.lat;
+  const longDeparture = locationDeparture.long;
+  const locationDestination = Object.values(flights)[0].destination.location;
+  const latDestination = locationDestination.lat;
+  const longDestination = locationDestination.long;
+  const latlngs = [
+    [latDeparture, longDeparture],
+    [latDestination,longDestination]
+  ];
+
+  L.polyline(latlngs, { color: "#0099CC" }).addTo(map);
+
+}
+
 function movePlane(plane) {
   const planeIcon = L.icon({
     iconUrl: "plane.png",
@@ -48,9 +66,6 @@ function movePlane(plane) {
   <div class="font-mono font-bold	text-cyan-600 text-xs "> Posición ->  <span class="text-slate-600"> lat: ${plane.position.lat}, long: ${plane.position.lat} </span> </div>
   <div class="font-mono font-bold	text-cyan-600 text-xs "> Distancia  <span class="text-slate-600">${plane.distance} </span> </div>
     <div class="font-mono font-bold	text-cyan-600 text-xs "> Arrival: <span class="text-slate-600"> ${plane.status} </span> </div>
-
- 
-
 
  `);
 
@@ -200,8 +215,9 @@ function onFlightsReceived(object) {
     idFlight,
     departure,
     destination,
-    departureDate
-  );
+    departureDate);
+
+  showFlight(flights)
 }
 
 function onObjectReceived(event) {
