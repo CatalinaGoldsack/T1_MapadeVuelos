@@ -16,12 +16,12 @@ function uuidv4() {
 //   return names[random]
 // }
 //
+let planeDict = {};
+
+let map;
 
 function renderBaseMap() {
-  const map = L.map("map").setView(
-    [-33.499521990556495, -70.61272122258416],
-    2
-  );
+  map = L.map("map").setView([0, 0], 3);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -30,17 +30,43 @@ function renderBaseMap() {
   }).addTo(map);
 }
 
-function insertFlight(idFlight,idDeparture, departure, idDestination, destination, departureDate) {
+function movePlane(plane) {
+  const planeIcon = L.icon({
+    iconUrl: "plane.png",
+    iconSize: [30, 30], // size of the icon
+    iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+    popupAnchor: [15, 0], // point from which the popup should open relative to the iconAnchor
+  });
+  console.log(plane.flight_id);
+
+  // L.marker([51.5, -0.09], { icon: landing }).addTo(map).bindPopup("Soy un aeropuerto de aterrizaje");
+  const planeMarker = L.marker([plane.position.lat, plane.position.long], {
+    icon: planeIcon,
+  })
+    .addTo(map)
+    .bindPopup("Soy un avión");
+  if (planeDict[plane.flight_id]) map.removeLayer(planeDict[plane.flight_id])
+  planeDict[plane.flight_id] = planeMarker;
+}
+
+function insertFlight(
+  idFlight,
+  idDeparture,
+  departure,
+  idDestination,
+  destination,
+  departureDate
+) {
   const containerFlight = document.getElementById("flight-container");
-  containerFlight.insertAdjacentHTML('afterbegin', 
-  `<div  class="flex text-xs gap-1 text-center">
-   <h3 class="grow font-mono text-black p-1 bg-cyan-100"> ${idFlight} </h3>
-   <h3 class="grow font-mono text-black p-1 bg-slate-200">${idDeparture}</h3>
-   <h3 class="grow font-mono text-black p-1 "> ${departure} </h3>
-   <h3 class="grow font-mono text-black p-1 bg-slate-200">${idDestination}</h3>
-   <h3 class="grow font-mono text-black p-1 "> ${destination} </h3>
-   <h3 class="grow font-mono text-black p-1 bg-slate-100"> ${departureDate} </h3>
-   </div>`);
+  containerFlight.insertAdjacentHTML(
+    "afterbegin",
+    `<div  class="flex text-xs gap-1 text-center">
+   <h3 class="basis-1/4 font-mono text-black p-1 bg-cyan-100"> ${idFlight} </h3>
+   <h3 class="basis-1/4 font-mono text-black p-1 "> ${departure} </h3>
+   <h3 class="basis-1/4 font-mono text-black p-1 "> ${destination} </h3>
+   <h3 class="basis-1/4 font-mono text-black p-1 bg-slate-100"> ${departureDate} </h3>
+   </div>`
+  );
 }
 
 function insertMessage(text, classes = "bg-cyan-600", name, date) {
@@ -108,30 +134,83 @@ function onLandingReceived(object) {}
 
 function onTakeOffReceived(object) {}
 
-function onPlaneReceived(object) {}
+function onPlaneReceived(object) {
+  const plane = object.plane;
+  const idFlightPlane = plane.flight_id;
+
+  const airlinePlane = plane.airline;
+
+  const idAirline = airlinePlane.id;
+  const nameAirline = airlinePlane.name;
+
+  const captainPlane = plane.captain;
+  const positionPlane = plane.position;
+
+  const latPosition = positionPlane.lat;
+  const longPosition = positionPlane.long;
+
+  const headingPlane = plane.heading;
+  const etaPlane = plane.ETA;
+  const distancePlan = plane.distance;
+  const arrivalPlane = plane.arrival;
+  const statusPlane = plane.status;
+
+  movePlane(plane);
+}
 
 function onFlightsReceived(object) {
-  const flights = object.flights
+  const flights = object.flights;
 
-  const idFlight = Object.values(flights)[0].id
-  const idDeparture = Object.values(flights)[0].departure.id
-  const departure = Object.values(flights)[0].departure.name
-  const idDestination = Object.values(flights)[0].destination.id
-  const destination = Object.values(flights)[0].destination.name
-  const departureDate = Object.values(flights)[0].departure_date
+  const idFlight = Object.values(flights)[0].id;
 
-  insertFlight(idFlight,idDeparture,departure, idDestination, destination, departureDate);
+  const idDeparture = Object.values(flights)[0].departure.id;
+  const departure = Object.values(flights)[0].departure.name;
+  const cityDeparture = Object.values(flights)[0].departure.city;
+  const locationDeparture = Object.values(flights)[0].departure.location;
+  const latDeparture = locationDeparture.lat;
+  const longDeparture = locationDeparture.long;
+  const idCityDep = cityDeparture.id;
+  const nameCityDep = cityDeparture.name;
+  const countryDep = cityDeparture.country;
+  const idCountryDep = countryDep.id;
+  const nameCountryDep = countryDep.name;
+
+  const idDestination = Object.values(flights)[0].destination.id;
+  const destination = Object.values(flights)[0].destination.name;
+  const cityDestination = Object.values(flights)[0].destination.city;
+  const locationDestination = Object.values(flights)[0].destination.location;
+  const latDestination = locationDestination.lat;
+  const longDestination = locationDestination.long;
+  const idCityDest = cityDestination.id;
+  const nameCityDest = cityDestination.name;
+  const countryDest = cityDestination.country;
+  const idCountryDest = countryDest.id;
+  const nameCountryDest = countryDest.name;
+
+  const departureDate = Object.values(flights)[0].departure_date;
+
+  insertFlight(
+    idFlight,
+    idDeparture,
+    departure,
+    idDestination,
+    destination,
+    departureDate
+  );
 }
 
 function onObjectReceived(event) {
   const object = JSON.parse(event.data);
- 
+
   switch (object.type) {
     case "message":
       onMessageReceived(object);
       break;
     case "flights":
       onFlightsReceived(object);
+      break;
+    case "plane":
+      onPlaneReceived(object);
       break;
   }
 }
