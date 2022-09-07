@@ -32,20 +32,71 @@ function renderBaseMap() {
 }
 
 function showFlight(flights){
-  
 
+  const take_offIcon = L.icon({
+    iconUrl: "take_off.png",
+    iconSize: [25, 38], // size of the icon
+    iconAnchor: [12, 38], // point of the icon which will correspond to marker's location
+    popupAnchor: [0, -38], // point from which the popup should open relative to the iconAnchor
+  });
+
+  const landingIcon = L.icon({
+    iconUrl: "landing.png",
+
+    iconSize: [25, 38], // size of the icon
+    iconAnchor: [12, 38], // point of the icon which will correspond to marker's location
+    popupAnchor: [0, -38], // point from which the popup should open relative to the iconAnchor
+  });
+
+  const idDeparture = Object.values(flights)[0].departure.id;
+  const departure = Object.values(flights)[0].departure.name;
+  const cityDeparture = Object.values(flights)[0].departure.city;
   const locationDeparture = Object.values(flights)[0].departure.location;
   const latDeparture = locationDeparture.lat;
   const longDeparture = locationDeparture.long;
+  const idCityDep = cityDeparture.id;
+  const nameCityDep = cityDeparture.name;
+  const countryDep = cityDeparture.country;
+  const idCountryDep = countryDep.id;
+  const nameCountryDep = countryDep.name;
+
+  const idDestination = Object.values(flights)[0].destination.id;
+  const destination = Object.values(flights)[0].destination.name;
+  const cityDestination = Object.values(flights)[0].destination.city;
   const locationDestination = Object.values(flights)[0].destination.location;
   const latDestination = locationDestination.lat;
   const longDestination = locationDestination.long;
+  const idCityDest = cityDestination.id;
+  const nameCityDest = cityDestination.name;
+  const countryDest = cityDestination.country;
+  const idCountryDest = countryDest.id;
+  const nameCountryDest = countryDest.name;
+
+
   const latlngs = [
     [latDeparture, longDeparture],
     [latDestination,longDestination]
   ];
-
   L.polyline(latlngs, { color: "#0099CC" }).addTo(map);
+
+  const take_offPopup = L.popup({
+    closeOnClick: false,
+    autoClose: false}).setContent(`<div class="font-mono font-bold text-cyan-600 text-xs"> ID Aeropuerto Salida: <span class="text-slate-600"> ${idDeparture} </span> </div>
+    <div class="font-mono font-bold text-cyan-600 text-xs"> Nombre: <span class="text-slate-600"> ${departure} </span> </div>
+    <div class="font-mono font-bold text-cyan-600 text-xs"> Ciudad:  <span class="text-slate-600"> ${nameCityDep} </span> </div>
+    <div class="font-mono font-bold text-cyan-600 text-xs"> País:  <span class="text-slate-600"> ${nameCountryDep} </span> </div>`)
+  
+    const landingPopup = L.popup({
+      closeOnClick: false,
+      autoClose: false}).setContent(`<div class="font-mono font-bold text-cyan-600 text-xs"> ID Aeropuerto Llegada: <span class="text-slate-600"> ${idDestination} </span> </div>
+      <div class="font-mono font-bold text-cyan-600 text-xs"> Nombre: <span class="text-slate-600"> ${destination} </span> </div>
+      <div class="font-mono font-bold text-cyan-600 text-xs"> Ciudad:  <span class="text-slate-600"> ${nameCityDest} </span> </div>
+      <div class="font-mono font-bold text-cyan-600 text-xs"> País:  <span class="text-slate-600"> ${nameCountryDest} </span> </div> `)
+    
+
+  const take_offMarker = L.marker([latDeparture, longDeparture], {icon: take_offIcon}).addTo(map).bindPopup(take_offPopup);
+  const landingMarker = L.marker([latDestination,longDestination], {icon: landingIcon}).addTo(map).bindPopup(landingPopup);
+
 
 }
 
@@ -57,7 +108,7 @@ function movePlane(plane) {
     popupAnchor: [15, 0], // point from which the popup should open relative to the iconAnchor
   });
 
-  const newpopup = L.popup({
+  const popupPlane = L.popup({
     closeOnClick: false,
     autoClose: false}).setContent(`<div class="font-mono font-bold text-cyan-600 text-xs"> Id Flight: <span class="text-slate-600"> ${plane.flight_id} </span> </div>
     <div class="font-mono font-bold text-cyan-600 text-xs "> Aerolínea:  <span class="text-slate-600"> ${plane.airline.name} </span> </div>
@@ -70,7 +121,7 @@ function movePlane(plane) {
  `);
 
   // L.marker([51.5, -0.09], { icon: landing }).addTo(map).bindPopup("Soy un aeropuerto de aterrizaje");
-  const planeMarker = L.marker([plane.position.lat, plane.position.long], {icon: planeIcon}).addTo(map).bindPopup(newpopup);
+  const planeMarker = L.marker([plane.position.lat, plane.position.long], {icon: planeIcon}).addTo(map).bindPopup(popupPlane);
   if (planeDict[plane.flight_id]) map.removeLayer(planeDict[plane.flight_id])
   planeDict[plane.flight_id] = planeMarker;
 }
