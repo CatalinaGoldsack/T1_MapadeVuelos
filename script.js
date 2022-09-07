@@ -11,12 +11,10 @@ function uuidv4() {
 }
 
 function randomName() {
-  const names = ["Cata (yo) ", "Fran (yo) ", "Rafa (yo) ", "Bernardita (yo) ", "Mane (yo) ", "Josefina (yo) ", "Eugenio (yo) ", "Diego (yo)"];
+  const names = ["Cata ", "Rafa ", "Bernardita", "Mane", "Josefina", "Eugenio", "Diego"];
   const random = Math.floor(Math.random() * names.length);
   return names[random]
 }
-
-
 
 let planeDict = {};
 let flightsList=[]
@@ -121,21 +119,51 @@ function movePlane(plane) {
     <div class="font-mono font-bold	text-cyan-600 text-xs "> Arrival: <span class="text-slate-600"> ${plane.status} </span> </div>
 
  `);
-//  const latlngs = [
-//   [latDeparture, longDeparture],
-//   [latDestination,longDestination]
-// ];
-// L.polyline(latlngs, { color: "#0099CC" }).addTo(map);
+
 
   const planeMarker = L.marker([plane.position.lat, plane.position.long], {icon: planeIcon}).addTo(map).bindPopup(popupPlane);
 
   if (planeDict[plane.flight_id]) map.removeLayer(planeDict[plane.flight_id])
   planeDict[plane.flight_id] = planeMarker;
+
+  //  const latlngs = [
+//   [latDeparture, longDeparture],
+//   [latDestination,longDestination]
+// ];
+// L.polyline(latlngs, { color: "#0099CC" }).addTo(map);
 }
 
 
 
-function insertFlight(idFlight, departure, destination, departureDate) {
+function insertFlight(flights) {
+  const idFlight = Object.values(flights)[0].id;
+
+  const idDeparture = Object.values(flights)[0].departure.id;
+  const departure = Object.values(flights)[0].departure.name;
+  const cityDeparture = Object.values(flights)[0].departure.city;
+  const locationDeparture = Object.values(flights)[0].departure.location;
+  const latDeparture = locationDeparture.lat;
+  const longDeparture = locationDeparture.long;
+  const idCityDep = cityDeparture.id;
+  const nameCityDep = cityDeparture.name;
+  const countryDep = cityDeparture.country;
+  const idCountryDep = countryDep.id;
+  const nameCountryDep = countryDep.name;
+
+  const idDestination = Object.values(flights)[0].destination.id;
+  const destination = Object.values(flights)[0].destination.name;
+  const cityDestination = Object.values(flights)[0].destination.city;
+  const locationDestination = Object.values(flights)[0].destination.location;
+  const latDestination = locationDestination.lat;
+  const longDestination = locationDestination.long;
+  const idCityDest = cityDestination.id;
+  const nameCityDest = cityDestination.name;
+  const countryDest = cityDestination.country;
+  const idCountryDest = countryDest.id;
+  const nameCountryDest = countryDest.name;
+
+  const departureDate = Object.values(flights)[0].departure_date;
+
   if (!flightsList.includes(idFlight)){
 
   const containerFlight = document.getElementById("flight-container");
@@ -218,24 +246,6 @@ function onTakeOffReceived(object) {}
 
 function onPlaneReceived(object) {
   const plane = object.plane;
-  const idFlightPlane = plane.flight_id;
-
-  const airlinePlane = plane.airline;
-
-  const idAirline = airlinePlane.id;
-  const nameAirline = airlinePlane.name;
-
-  const captainPlane = plane.captain;
-  const positionPlane = plane.position;
-
-  const latPosition = positionPlane.lat;
-  const longPosition = positionPlane.long;
-
-  const headingPlane = plane.heading;
-  const etaPlane = plane.ETA;
-  const distancePlan = plane.distance;
-  const arrivalPlane = plane.arrival;
-  const statusPlane = plane.status;
 
   movePlane(plane);
 }
@@ -243,39 +253,7 @@ function onPlaneReceived(object) {
 function onFlightsReceived(object) {
   const flights = object.flights;
 
-  const idFlight = Object.values(flights)[0].id;
-
-  const idDeparture = Object.values(flights)[0].departure.id;
-  const departure = Object.values(flights)[0].departure.name;
-  const cityDeparture = Object.values(flights)[0].departure.city;
-  const locationDeparture = Object.values(flights)[0].departure.location;
-  const latDeparture = locationDeparture.lat;
-  const longDeparture = locationDeparture.long;
-  const idCityDep = cityDeparture.id;
-  const nameCityDep = cityDeparture.name;
-  const countryDep = cityDeparture.country;
-  const idCountryDep = countryDep.id;
-  const nameCountryDep = countryDep.name;
-
-  const idDestination = Object.values(flights)[0].destination.id;
-  const destination = Object.values(flights)[0].destination.name;
-  const cityDestination = Object.values(flights)[0].destination.city;
-  const locationDestination = Object.values(flights)[0].destination.location;
-  const latDestination = locationDestination.lat;
-  const longDestination = locationDestination.long;
-  const idCityDest = cityDestination.id;
-  const nameCityDest = cityDestination.name;
-  const countryDest = cityDestination.country;
-  const idCountryDest = countryDest.id;
-  const nameCountryDest = countryDest.name;
-
-  const departureDate = Object.values(flights)[0].departure_date;
-
-  insertFlight(
-    idFlight,
-    departure,
-    destination,
-    departureDate);
+  insertFlight(flights);
 
   showFlight(flights)
 }
@@ -293,6 +271,8 @@ function onObjectReceived(event) {
     case "plane":
       onPlaneReceived(object);
       break;
+    case "take_off":
+      on
   }
 }
 
