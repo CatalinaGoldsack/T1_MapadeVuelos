@@ -10,12 +10,14 @@ function uuidv4() {
   );
 }
 
-// function randomName() {
-//   const names = ["Catalina", "Francisca", "Rafael", "Bernardita", "Mane", "Josefina", "Eugenio"];
-//   const random = Math.floor(Math.random() * names.length);
-//   return names[random]
-// }
-//
+function randomName() {
+  const names = ["Cata (yo) ", "Fran (yo) ", "Rafa (yo) ", "Bernardita (yo) ", "Mane (yo) ", "Josefina (yo) ", "Eugenio (yo) ", "Diego (yo)"];
+  const random = Math.floor(Math.random() * names.length);
+  return names[random]
+}
+
+
+
 let planeDict = {};
 let flightsList=[]
 
@@ -302,7 +304,7 @@ function setupWebsocket() {
     sendObject({
       type: "join",
       id: uuidv4(),
-      username: "Cata",
+      username: randomName(),
     });
   };
 
