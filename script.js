@@ -11,18 +11,26 @@ function uuidv4() {
 }
 
 function randomName() {
-  const names = ["Cata ", "Rafa ", "Bernardita", "Mane", "Josefina", "Eugenio", "Diego"];
+  const names = [
+    "Cata ",
+    "Rafa ",
+    "Bernardita",
+    "Mane",
+    "Josefina",
+    "Eugenio",
+    "Diego",
+  ];
   const random = Math.floor(Math.random() * names.length);
-  return names[random]
+  return names[random];
 }
 
 let planeDict = {};
-let flightsList=[]
-
+let flightsList = [];
 let map;
+let flightDict = {}
 
 function renderBaseMap() {
-  map = L.map("map").setView([0, 0], 3);
+  map = L.map("map").setView([0, 0], 1);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -31,8 +39,7 @@ function renderBaseMap() {
   }).addTo(map);
 }
 
-function showFlight(flights){
-
+function showFlight(flights) {
   const take_offIcon = L.icon({
     iconUrl: "take_off.png",
     iconSize: [25, 38], // size of the icon
@@ -42,16 +49,15 @@ function showFlight(flights){
 
   const landingIcon = L.icon({
     iconUrl: "landing.png",
-
     iconSize: [25, 38], // size of the icon
     iconAnchor: [12, 38], // point of the icon which will correspond to marker's location
     popupAnchor: [0, -38], // point from which the popup should open relative to the iconAnchor
   });
 
-  const idDeparture = Object.values(flights)[0].departure.id;
-  const departure = Object.values(flights)[0].departure.name;
-  const cityDeparture = Object.values(flights)[0].departure.city;
-  const locationDeparture = Object.values(flights)[0].departure.location;
+  const idDeparture = flights.departure.id;
+  const departure = flights.departure.name;
+  const cityDeparture = flights.departure.city;
+  const locationDeparture = flights.departure.location;
   const latDeparture = locationDeparture.lat;
   const longDeparture = locationDeparture.long;
   const idCityDep = cityDeparture.id;
@@ -60,10 +66,10 @@ function showFlight(flights){
   const idCountryDep = countryDep.id;
   const nameCountryDep = countryDep.name;
 
-  const idDestination = Object.values(flights)[0].destination.id;
-  const destination = Object.values(flights)[0].destination.name;
-  const cityDestination = Object.values(flights)[0].destination.city;
-  const locationDestination = Object.values(flights)[0].destination.location;
+  const idDestination =flights.destination.id;
+  const destination = flights.destination.name;
+  const cityDestination = flights.destination.city;
+  const locationDestination = flights.destination.location;
   const latDestination = locationDestination.lat;
   const longDestination = locationDestination.long;
   const idCityDest = cityDestination.id;
@@ -72,31 +78,40 @@ function showFlight(flights){
   const idCountryDest = countryDest.id;
   const nameCountryDest = countryDest.name;
 
-
   const latlngs = [
     [latDeparture, longDeparture],
-    [latDestination,longDestination]
+    [latDestination, longDestination],
   ];
   L.polyline(latlngs, { color: "#0099CC" }).addTo(map);
 
   const take_offPopup = L.popup({
     closeOnClick: false,
-    autoClose: false}).setContent(`<div class="font-mono font-bold text-cyan-600 text-xs"> ID Aeropuerto Salida: <span class="text-slate-600"> ${idDeparture} </span> </div>
+    autoClose: false,
+  })
+    .setContent(`<div class="font-mono font-bold text-cyan-600 text-xs"> ID Aeropuerto Salida: <span class="text-slate-600"> ${idDeparture} </span> </div>
     <div class="font-mono font-bold text-cyan-600 text-xs"> Nombre: <span class="text-slate-600"> ${departure} </span> </div>
     <div class="font-mono font-bold text-cyan-600 text-xs"> Ciudad:  <span class="text-slate-600"> ${nameCityDep} [${idCityDep}]</span> </div>
-    <div class="font-mono font-bold text-cyan-600 text-xs"> País:  <span class="text-slate-600"> ${nameCountryDep} [${idCountryDep}]</span> </div>`)
-  
-    const landingPopup = L.popup({
-      closeOnClick: false,
-      autoClose: false}).setContent(`<div class="font-mono font-bold text-cyan-600 text-xs"> ID Aeropuerto Llegada: <span class="text-slate-600"> ${idDestination} </span> </div>
+    <div class="font-mono font-bold text-cyan-600 text-xs"> País:  <span class="text-slate-600"> ${nameCountryDep} [${idCountryDep}]</span> </div>`);
+
+  const landingPopup = L.popup({
+    closeOnClick: false,
+    autoClose: false,
+  })
+    .setContent(`<div class="font-mono font-bold text-cyan-600 text-xs"> ID Aeropuerto Llegada: <span class="text-slate-600"> ${idDestination} </span> </div>
       <div class="font-mono font-bold text-cyan-600 text-xs"> Nombre: <span class="text-slate-600"> ${destination} </span> </div>
       <div class="font-mono font-bold text-cyan-600 text-xs"> Ciudad:  <span class="text-slate-600"> ${nameCityDest} [${idCityDest}] </span> </div>
-      <div class="font-mono font-bold text-cyan-600 text-xs"> País:  <span class="text-slate-600"> ${nameCountryDest} [${idCountryDest}] </span> </div> `)
-    
+      <div class="font-mono font-bold text-cyan-600 text-xs"> País:  <span class="text-slate-600"> ${nameCountryDest} [${idCountryDest}] </span> </div> `);
 
-  const take_offMarker = L.marker([latDeparture, longDeparture], {icon: take_offIcon}).addTo(map).bindPopup(take_offPopup);
-  const landingMarker = L.marker([latDestination,longDestination], {icon: landingIcon}).addTo(map).bindPopup(landingPopup);
-
+  const take_offMarker = L.marker([latDeparture, longDeparture], {
+    icon: take_offIcon,
+  })
+    .addTo(map)
+    .bindPopup(take_offPopup);
+  const landingMarker = L.marker([latDestination, longDestination], {
+    icon: landingIcon,
+  })
+    .addTo(map)
+    .bindPopup(landingPopup);
 }
 
 function movePlane(plane) {
@@ -106,7 +121,6 @@ function movePlane(plane) {
     iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
     popupAnchor: [15, 0], // point from which the popup should open relative to the iconAnchor
   });
-
 
   const popupPlane = L.popup({
     closeOnClick: false,
@@ -120,63 +134,37 @@ function movePlane(plane) {
 
  `);
 
-
   const planeMarker = L.marker([plane.position.lat, plane.position.long], {icon: planeIcon}).addTo(map).bindPopup(popupPlane);
-
-  if (planeDict[plane.flight_id]) map.removeLayer(planeDict[plane.flight_id])
+  
+if (planeDict[plane.flight_id]) map.removeLayer(planeDict[plane.flight_id]);
   planeDict[plane.flight_id] = planeMarker;
 
   //  const latlngs = [
-//   [latDeparture, longDeparture],
-//   [latDestination,longDestination]
-// ];
-// L.polyline(latlngs, { color: "#0099CC" }).addTo(map);
+  //   [latDeparture, longDeparture],
+  //   [latDestination,longDestination]
+  // ];
+  // L.polyline(latlngs, { color: "#0099CC" }).addTo(map);
 }
 
-
-
 function insertFlight(flights) {
-  const idFlight = Object.values(flights)[0].id;
+  const idFlight = flights.id;
+  const departure = flights.departure.name;
+  const destination = flights.destination.name;
+  const departureDate = flights.departure_date;
 
-  const idDeparture = Object.values(flights)[0].departure.id;
-  const departure = Object.values(flights)[0].departure.name;
-  const cityDeparture = Object.values(flights)[0].departure.city;
-  const locationDeparture = Object.values(flights)[0].departure.location;
-  const latDeparture = locationDeparture.lat;
-  const longDeparture = locationDeparture.long;
-  const idCityDep = cityDeparture.id;
-  const nameCityDep = cityDeparture.name;
-  const countryDep = cityDeparture.country;
-  const idCountryDep = countryDep.id;
-  const nameCountryDep = countryDep.name;
-
-  const idDestination = Object.values(flights)[0].destination.id;
-  const destination = Object.values(flights)[0].destination.name;
-  const cityDestination = Object.values(flights)[0].destination.city;
-  const locationDestination = Object.values(flights)[0].destination.location;
-  const latDestination = locationDestination.lat;
-  const longDestination = locationDestination.long;
-  const idCityDest = cityDestination.id;
-  const nameCityDest = cityDestination.name;
-  const countryDest = cityDestination.country;
-  const idCountryDest = countryDest.id;
-  const nameCountryDest = countryDest.name;
-
-  const departureDate = Object.values(flights)[0].departure_date;
-
-  if (!flightsList.includes(idFlight)){
-
-  const containerFlight = document.getElementById("flight-container");
-  containerFlight.insertAdjacentHTML(
-    "afterbegin",
-    `<div  class="flex text-xs gap-1 text-center">
-   <h3 class="basis-1/4 font-mono text-black p-1 bg-cyan-100"> ${idFlight} </h3>
-   <h3 class="basis-1/4 font-mono text-black p-1 "> ${departure} </h3>
-   <h3 class="basis-1/4 font-mono text-black p-1 "> ${destination} </h3>
-   <h3 class="basis-1/4 font-mono text-black p-1 bg-slate-100"> ${departureDate} </h3>
-   </div>`
-  )
-  flightsList.push(idFlight)}
+  if (!flightsList.includes(idFlight)) {
+    const containerFlight = document.getElementById("flight-container");
+    containerFlight.insertAdjacentHTML(
+      "beforeend",
+      `<div  class="flex text-xs gap-1 text-center">
+      <h3 class="basis-1/4 font-mono text-black p-1 bg-cyan-100"> ${idFlight} </h3>
+      <h3 class="basis-1/4 font-mono text-black p-1 "> ${departure} </h3>
+      <h3 class="basis-1/4 font-mono text-black p-1 "> ${destination} </h3>
+      <h3 class="basis-1/4 font-mono text-black p-1 bg-slate-100"> ${departureDate} </h3>
+      </div>`
+    );
+    flightsList.push(idFlight);
+  }
 }
 
 function insertMessage(text, classes = "bg-cyan-600", name, date) {
@@ -185,10 +173,7 @@ function insertMessage(text, classes = "bg-cyan-600", name, date) {
     "beforeend",
     `<h1 class="font-mono font-semibold text-cyan-800 pt-3"> <i class="fas fa-user p-1"></i> ${name}</h1>
     <h1 class="text-zinc-700 text-xs"> ${date}</h1>
-    <p class="p-2 rounded text-white ${classes}">
-            ${text}
-            
-      </p> `
+    <p class="p-2 rounded text-white ${classes}"> ${text} </p> `
   );
 }
 
@@ -238,24 +223,46 @@ function onMessageReceived(object) {
   containerChat.scrollTop = containerChat.scrollHeight;
 }
 
-function onCrashedReceived(object) {}
+function onCrashedReceived(flight_id) {
+  console.log(`avión crashed ${flight_id}`);
+}
 
-function onLandingReceived(object) {}
+function onLandingReceived(flight_id) {
+  console.log(`avión landing ${flight_id}`);
+}
 
-function onTakeOffReceived(object) {}
+function onTakeOffReceived(flight_id) {
+  console.log(`avión takeoff ${flight_id}`);
+}
 
 function onPlaneReceived(object) {
   const plane = object.plane;
-
   movePlane(plane);
 }
-
+ 
 function onFlightsReceived(object) {
-  const flights = object.flights;
+  const idFlightList = Object.keys(object.flights)
+  const infoFlightList = Object.values(object.flights)
 
+  console.log(infoFlightList[0].id )
+  i=0
+  while (i < idFlightList.length) {
+
+    flightDict[idFlightList[i]] = infoFlightList[i]
+    console.log(flightDict[idFlightList[i]].id )
+    i++;
+  }
+const idFlightSortedList = idFlightList.sort()
+i=0
+while (i < idFlightSortedList.length) {
+  flights = flightDict[idFlightList[i]]
   insertFlight(flights);
+  showFlight(flights);
+  i++;
+}
 
-  showFlight(flights)
+
+
 }
 
 function onObjectReceived(event) {
@@ -271,8 +278,15 @@ function onObjectReceived(event) {
     case "plane":
       onPlaneReceived(object);
       break;
-    case "take_off":
-      on
+    case "take-off":
+      onTakeOffReceived(object.flight_id);
+      break;
+    case "landing":
+      onLandingReceived(object.flight_id);
+      break;
+    case "crashed":
+      onCrashedReceived(object.flight_id);
+      break;
   }
 }
 
